@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/news.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+<body>
+    <div class="dynamic">
+        <div class="container">
+            <div id="container"></div>
+            <div class="row text-center">
+                <div class="col-md-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm">
+                            <li><a href="javascript:" class="clear">第1页，共6页</a></li>
+                            <li>
+                                <span href="javascript:" aria-label="Previous"  aria-hidden="true" id="Previous">
+                                    <span>&laquo;</span>
+                                </span>
+                            </li>
+                            <li class="active"><a href="javascript:" id="14">1</a></li>
+                            <li><a href="javascript:" id="2">2</a></li>
+                            <li><a href="javascript:" id="4">3</a></li>
+                            <li><a href="javascript:" id="6">4</a></li>
+                            <li><a href="javascript:" id="8">5</a></li>
+                            <li>
+                                <span href="javascript:" aria-label="Next" aria-hidden="true" id="Next">
+                                    <span >&raquo;</span>
+                                </span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id="top" type="text/template">
+        {{each res}}
+        <a href="index-detail.html?id=14">
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="{{$value.url}}" alt="" width="300" height="160" class="center-block">
+                </div>
+                <div class="col-md-8">
+                    <div class="row txt">
+                        <p class="col-md-10">后园·黑龙江丨2019年黑龙江后园科技运营中心正式成立</p>
+                        <p class="col-md-2">{{$value.createdAt}}</p>
+                    </div>
+                    <div class="row">
+                        <p class="col-md-12 txt2">
+                            {{$value.type}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        {{/each}}
+    </script>
+</body>
+</html>
+<script>
+    $(function () {
+        var page=7;//每页条数
+        var totalPage=0;//总页数
+        var currentPage=1;//当前页
+
+        getData(currentPage);
+        function getData(page){
+            $.ajax({
+                url:'https://www.apiopen.top/meituApi',
+                data:{page},
+                success:function (msg) {
+                    console.log(msg);
+                    var html=template('top',{
+                        res:msg.data
+                    })
+                    $('#container').html(html);
+
+                    // var yema='';
+                    // msg.data.forEach((item,index)=>{
+                    //     console.log(index,item);
+                    //     yema+=' <li><a href="javascript:">'+index+'</a></li>';
+                    // })
+                    // $('.pages').append(yema)
+                }
+            })
+        }
+
+        $('.pagination li').on('click','a',function () {
+            $(this).parent().addClass('active').siblings('li').removeClass('active');
+            var li=$(this).html();
+            currentPage=li;
+            console.log(currentPage);
+            getData(currentPage);
+        })
+
+        $('.pagination').on('click','#Previous',function () {
+           if(currentPage>1){
+               currentPage--;
+               getData(currentPage);
+               console.log(currentPage);
+               $(this).parent().siblings().eq(currentPage).addClass('active').siblings().removeClass('active');
+
+               $('#Next').css({'background':'#fff'},{'color':'#fff'})
+           }else{
+               alert('到底了');
+               $(this).css({'background':'#656565'},{'color':'#656565'});
+               return false;
+           }
+        })
+        $('.pagination').on('click','#Next',function () {
+                if(currentPage<5){
+                    currentPage++;
+                    getData(currentPage);
+                    console.log(currentPage);
+                    $(this).parent(). siblings('li').eq(currentPage+1).addClass('active').siblings('li').removeClass('active');
+
+                    $('#Previous').css({'background':'#fff'},{'color':'#fff'})
+                }else{
+                    alert('到底了');
+                    $(this).css({'background':'#656565'},{'color':'#656565'});
+                    return false;
+                }
+
+
+
+        })
+    })
+</script>
